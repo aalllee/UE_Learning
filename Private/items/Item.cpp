@@ -4,7 +4,7 @@
 #include "items/Item.h"
 
 #include "Slash/DebugMacros.h"
-
+#include "Components/SphereComponent.h"
 
 AItem::AItem()
 {
@@ -12,28 +12,27 @@ AItem::AItem()
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMeshComponent"));
 	RootComponent = ItemMesh;
+
+	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
+	Sphere->SetupAttachment(GetRootComponent());
 }
 
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+}
 
-	Avg<int32>(1, 3);
-
-	UE_LOG(LogTemp, Warning, TEXT("Begin Play called"));
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Emerald, FString("Item OnScreen message"));
+void AItem::OnSphereOverlap(UPrimitiveComponent* OverlapperComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
 	
-	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, OtherActor->GetName());
+}
 
-	UWorld* World = GetWorld();
-	
-	SetActorLocation(FVector(0.f, 0.f, 50.f));
-
-	DRAW_SPHERE(GetActorLocation())
-	
+void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("ENDED"));
 }
 
 void AItem::Tick(float DeltaTime)
