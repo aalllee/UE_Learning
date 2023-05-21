@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "CharacterTypes.h"
 #include "Zinx.generated.h"
 
 class UInputMappingContext;
@@ -12,6 +13,10 @@ class UInputAction;
 
 class USpringArmComponent;
 class UCameraComponent;
+
+class AItem;
+
+
 
 UCLASS()
 class SLASH_API AZinx : public ACharacter
@@ -57,10 +62,19 @@ protected:
 
 
 private:
+
+	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
+	UPROPERTY(VisibleInstanceOnly)
+	AItem* OverlappingItem;
+
+public:
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+	FORCEINLINE ECharacterState GetCharacterState() const {return CharacterState;}
 };

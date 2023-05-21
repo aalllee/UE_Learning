@@ -5,6 +5,7 @@
 
 #include "Slash/DebugMacros.h"
 #include "Components/SphereComponent.h"
+#include "Characters/Zinx.h"
 
 AItem::AItem()
 {
@@ -26,13 +27,20 @@ void AItem::BeginPlay()
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlapperComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, OtherActor->GetName());
+	AZinx* PlayerCharacter = Cast<AZinx>(OtherActor);
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->SetOverlappingItem(this);
+	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("ENDED"));
+	AZinx* PlayerCharacter = Cast<AZinx>(OtherActor);
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->SetOverlappingItem(nullptr);
+	}
 }
 
 void AItem::Tick(float DeltaTime)

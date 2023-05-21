@@ -5,6 +5,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "items/Item.h"
+#include "items/Weapons/Weapon.h"
 //Enhanced input includes //////////////
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -73,7 +75,12 @@ void AZinx::Jump(const FInputActionValue& Value)
 
 void AZinx::EKey(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("E key pressed"));
+	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	}
 }
 
 void AZinx::Attack(const FInputActionValue& Value)
@@ -101,7 +108,7 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AZinx::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AZinx::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this,&ACharacter::Jump);
-		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Triggered, this, &AZinx::EKey);
+		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &AZinx::EKey);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AZinx::Attack);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AZinx::Dodge);
 	}

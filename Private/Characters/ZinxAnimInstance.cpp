@@ -27,5 +27,6 @@ void UZinxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 		GroundSpeed = UKismetMathLibrary::VSizeXY(ZinxCharacterMovement->Velocity);
 		IsFalling =	ZinxCharacterMovement->IsFalling();
+		CharacterState = ZinxCharacter->GetCharacterState();
 	}
 }

@@ -25,7 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnSphereOverlap(UPrimitiveComponent* OverlapperComponent,
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlapperComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
@@ -33,15 +33,15 @@ protected:
 		const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
+	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
-private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh;
 
+private:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
 };
