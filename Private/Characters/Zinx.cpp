@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "items/Item.h"
 #include "items/Weapons/Weapon.h"
+#include "Animation/AnimInstance.h"
 //Enhanced input includes //////////////
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -45,6 +46,8 @@ void AZinx::BeginPlay()
 
 void AZinx::Move(const FInputActionValue& Value)
 {
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+
 	//type based on the mapping setup in unreal
  	const FVector2D MovementVector = Value.Get<FVector2D>();
 	
@@ -80,18 +83,119 @@ void AZinx::EKey(const FInputActionValue& Value)
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		OverlappingItem = nullptr;
+		EquippedWeapon = OverlappingWeapon;
+	}
+	else
+	{
+		
+		const bool bCanDisarm = (ActionState == EActionState::EAS_Unoccupied) &&
+			(CharacterState != ECharacterState::ECS_Unequipped);
+
+		const bool bCanArm = ActionState == EActionState::EAS_Unoccupied &&
+			CharacterState == ECharacterState::ECS_Unequipped &&
+			EquippedWeapon;
+
+
+		if (bCanDisarm)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString("DISARM"));
+			PlayEquipMontage(FName("Unequip"));
+			CharacterState = ECharacterState::ECS_Unequipped;
+			ActionState = EActionState::EAS_EquippingWeapon;
+		}
+		else if (bCanArm)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString("ARM"));
+			PlayEquipMontage(FName("Equip"));
+			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+			ActionState = EActionState::EAS_EquippingWeapon;
+		}
+	
 	}
 }
 
 void AZinx::Attack(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("Attack"));
+	const bool bCanAttack = ActionState == EActionState::EAS_Unoccupied &&
+							CharacterState != ECharacterState::ECS_Unequipped;
+	
+	if (bCanAttack)
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
 }
 
 void AZinx::Dodge(const FInputActionValue& Value)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("Dodge"));
 }
+
+void AZinx::PlayAttackMontage()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("Attack"));
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		const int32 Selection = FMath::RandRange(0, 1);
+		FName SectionName = FName();
+		switch (Selection)
+		{
+		case 0:
+			SectionName = FName("Attack1");
+			break;
+		case 1:
+			SectionName = FName("Attack2");
+			break;
+		default:
+			break;
+		}
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+}
+
+void AZinx::PlayEquipMontage(FName SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && EquipMontage)
+	{
+		AnimInstance->Montage_Play(EquipMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, EquipMontage);
+	}
+}
+
+void AZinx::Disarm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
+	}
+}
+
+void AZinx::Arm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("RightHandSocket"));
+	}
+}
+
+void AZinx::FinishEquipping()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+
+void AZinx::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+
+
+}
+
 
 void AZinx::Tick(float DeltaTime)
 {
@@ -109,7 +213,7 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AZinx::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this,&ACharacter::Jump);
 		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &AZinx::EKey);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AZinx::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AZinx::Attack);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AZinx::Dodge);
 	}
 

@@ -9,6 +9,13 @@
 
 class USphereComponent;
 
+enum class EItemState : uint8 
+{
+	EIS_Hovering,
+	EIS_Equipped
+};
+
+
 UCLASS()
 class SLASH_API AItem : public AActor
 {
@@ -24,6 +31,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
+		float Amplitude = 0.25f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
+		float TimeConstant = 5.f;
+
 	UFUNCTION()
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlapperComponent,
 		AActor* OtherActor,
@@ -38,12 +50,22 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
+	float TransformedSin();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh;
 
-private:
+	EItemState ItemState = EItemState::EIS_Hovering;
+
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
+
+private:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float RunningTime = 0.f;
+
+
 };
 
 template<typename T>

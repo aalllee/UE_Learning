@@ -6,6 +6,8 @@
 #include "items/Item.h"
 #include "Weapon.generated.h"
 
+
+class USoundBase;
 /**
  * 
  */
@@ -15,6 +17,8 @@ class SLASH_API AWeapon : public AItem
 	GENERATED_BODY()
 public:
 	void Equip(USceneComponent* InParent, FName InSocketName);
+
+	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 
 protected:
 	
@@ -30,4 +34,8 @@ protected:
 			AActor* OtherActor,
 			UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex);
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	USoundBase* EquipSound;
 };
