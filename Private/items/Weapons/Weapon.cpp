@@ -7,13 +7,14 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Interfaces/HitInterface.h"
 
 AWeapon::AWeapon()
 {
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
 	WeaponBox->SetupAttachment(GetRootComponent());
 
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
@@ -96,4 +97,15 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlapperComponent, AActor* Oth
 		BoxHit,
 		true
 	);
+
+	if (BoxHit.GetActor())
+	{
+		//check if actor that we hit implements IHitInterface
+		IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+	
+		if (HitInterface)
+		{
+			HitInterface->GetHit(BoxHit.ImpactPoint);
+		}
+	}
 }

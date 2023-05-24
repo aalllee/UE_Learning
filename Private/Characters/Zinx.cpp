@@ -8,6 +8,7 @@
 #include "items/Item.h"
 #include "items/Weapons/Weapon.h"
 #include "Animation/AnimInstance.h"
+#include "Components/BoxComponent.h"
 //Enhanced input includes //////////////
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -215,6 +216,16 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &AZinx::EKey);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AZinx::Attack);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AZinx::Dodge);
+	}
+
+}
+
+void AZinx::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	{
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+	
 	}
 
 }
