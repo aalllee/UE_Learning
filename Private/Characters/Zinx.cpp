@@ -69,7 +69,7 @@ void AZinx::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 	AddControllerYawInput(LookAxisVector.X);
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString::SanitizeFloat(LookAxisVector.Y));
+	
 }
 
 void AZinx::Jump(const FInputActionValue& Value)
@@ -130,7 +130,7 @@ void AZinx::Attack(const FInputActionValue& Value)
 
 void AZinx::Dodge(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green, FString("Dodge"));
+	
 }
 
 void AZinx::PlayAttackMontage()
@@ -225,6 +225,7 @@ void AZinx::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
 	{
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		EquippedWeapon->IgnoreActors.Empty();
 	
 	}
 
