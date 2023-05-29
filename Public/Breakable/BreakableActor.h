@@ -29,5 +29,8 @@ private:
 
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ATreasure> TreasureClass;
+	TArray<TSubclassOf<class ATreasure>>  TreasureClasses;
+
+	bool bBroken = false;
+	
 };
