@@ -43,6 +43,8 @@ void AZinx::BeginPlay()
 		}
 		
 	}
+
+	Tags.Add(FName("PlayerCharacter"));
 }
 
 void AZinx::Move(const FInputActionValue& Value)

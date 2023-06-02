@@ -12,6 +12,7 @@ class UAnimMontage;
 class USoundBase;
 class UAttributeComponent;
 class UHealthBarComponent;
+class UPawnSensingComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -33,6 +34,8 @@ protected:
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
+	UFUNCTION()
+	void PawnSeen(APawn* SeenPawn);
 	//Play Montage Functions
 	void PlayHitReactMontage(const FName SectionName);
 
@@ -43,17 +46,27 @@ protected:
 
 private:
 
+	//COMPONENTS
+
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarWidget;
 
+	UPROPERTY(VisibleAnywhere)
+	UPawnSensingComponent* PawnSensing;
+
+	//ANIMATION MONTAGES
+
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* DeathMontage;
+	
+
+	//EFFECTS
 
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;
@@ -68,6 +81,9 @@ private:
 	double CombatRadius = 500;
 
 	UPROPERTY(EditAnywhere)
+	double AttackRadius = 150.f;
+
+	UPROPERTY(EditAnywhere)
 	double PatrolRadius = 200.f;
 
 
@@ -76,7 +92,7 @@ private:
 	UPROPERTY()
 	class AAIController* EnemyController;
 
-	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation", BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	AActor* PatrolTarget;
 
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -89,4 +105,7 @@ private:
 	float WaitMin = 5.f;
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
+
+
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 };
