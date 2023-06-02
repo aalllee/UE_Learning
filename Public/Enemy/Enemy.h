@@ -21,6 +21,8 @@ class SLASH_API AEnemy : public ACharacter, public IHitInterface
 public:
 	AEnemy();
 	virtual void Tick(float DeltaTime) override;
+	void CheckPatrolTarget();
+	void CheckCombatTarget();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 	void DirectionalHitReact(const FVector& ImpactPoint);
@@ -28,12 +30,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void Die();
-
+	bool InTargetRange(AActor* Target, double Radius);
+	void MoveToTarget(AActor* Target);
+	AActor* ChoosePatrolTarget();
 	//Play Montage Functions
 	void PlayHitReactMontage(const FName SectionName);
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+
 
 private:
 
@@ -61,6 +67,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500;
 
+	UPROPERTY(EditAnywhere)
+	double PatrolRadius = 200.f;
+
 
 	//NAVIGATION
 	//Current partol target
@@ -72,4 +81,12 @@ private:
 
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<AActor*> PatrolTargets;
+
+	FTimerHandle PatrolTimer;
+	void PatrolTimerFinished();
+
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float WaitMin = 5.f;
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float WaitMax = 10.f;
 };
