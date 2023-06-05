@@ -4,18 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interfaces/HitInterface.h"
 #include "Characters/CharacterTypes.h"
+#include "Characters/BaseCharacter.h"
 #include "Enemy.generated.h"
 
-class UAnimMontage;
-class USoundBase;
-class UAttributeComponent;
+
+
 class UHealthBarComponent;
 class UPawnSensingComponent;
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -26,30 +25,27 @@ public:
 	void CheckCombatTarget();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
-	void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCaused) override;
+	virtual void Destroyed() override;
 protected:
 	virtual void BeginPlay() override;
-	void Die();
+	virtual void Die() override;
+	virtual void Attack(const FInputActionValue& Value) override;
+	virtual void PlayAttackMontage() override;
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
-	//Play Montage Functions
-	void PlayHitReactMontage(const FName SectionName);
+	
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
-
-
 
 private:
 
 	//COMPONENTS
 
-	UPROPERTY(VisibleAnywhere)
-	UAttributeComponent* Attributes;
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarWidget;
@@ -57,28 +53,16 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensing;
 
-	//ANIMATION MONTAGES
+	UPROPERTY(EditAnywhere)
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* HitReactMontage;
+	TSubclassOf<class AWeapon> WeaponClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* DeathMontage;
-	
-
-	//EFFECTS
-
-	UPROPERTY(EditAnywhere, Category = Sounds)
-	USoundBase* HitSound;
-
-	UPROPERTY(EditAnywhere, Category = VisualEffects)
-	UParticleSystem* HitParticles;
 
 	UPROPERTY()
 	AActor* CombatTarget;
 	
 	UPROPERTY(EditAnywhere)
-	double CombatRadius = 500;
+	double CombatRadius = 500.f;
 
 	UPROPERTY(EditAnywhere)
 	double AttackRadius = 150.f;
@@ -105,7 +89,6 @@ private:
 	float WaitMin = 5.f;
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
-
 
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 };

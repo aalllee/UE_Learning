@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
 #include "Zinx.generated.h"
@@ -16,11 +16,11 @@ class UCameraComponent;
 
 class AItem;
 class UAnimMontage;
-class AWeapon;
+
 
 
 UCLASS()
-class SLASH_API AZinx : public ACharacter
+class SLASH_API AZinx : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -29,14 +29,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
-		void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
-	
-
 protected:
 	virtual void BeginPlay() override;
-
 	/*
 	Callbacks For Input
 	*/
@@ -45,16 +39,16 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
 	void EKey(const FInputActionValue& Value);
-	void Attack(const FInputActionValue& Value);
+	virtual void Attack(const FInputActionValue& Value) override;
 	void Dodge(const FInputActionValue& Value);
 
 	/*
 	Play Montage Functions
 	*/
-	void PlayAttackMontage();
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
-
+	virtual void PlayAttackMontage() override;
+	
+	virtual void AttackEnd() override;
+	virtual bool CanAttack() override;
 	void PlayEquipMontage(FName SectionName);
 
 	UFUNCTION(BlueprintCallable)
@@ -62,7 +56,7 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable)
-		void Arm();
+	void Arm();
 
 
 	UFUNCTION(BlueprintCallable)
@@ -108,14 +102,9 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	AWeapon* EquippedWeapon;
 
-	/*
-	Animation Montages
-	*/
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage;
+
+	
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage;

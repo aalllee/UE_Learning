@@ -6,9 +6,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "items/Item.h"
-#include "items/Weapons/Weapon.h"
 #include "Animation/AnimInstance.h"
-#include "Components/BoxComponent.h"
+#include "items/Weapons/Weapon.h"
+
 //Enhanced input includes //////////////
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -46,6 +46,8 @@ void AZinx::BeginPlay()
 
 	Tags.Add(FName("PlayerCharacter"));
 }
+
+
 
 void AZinx::Move(const FInputActionValue& Value)
 {
@@ -121,10 +123,8 @@ void AZinx::EKey(const FInputActionValue& Value)
 
 void AZinx::Attack(const FInputActionValue& Value)
 {
-	const bool bCanAttack = ActionState == EActionState::EAS_Unoccupied &&
-							CharacterState != ECharacterState::ECS_Unequipped;
 	
-	if (bCanAttack)
+	if (CanAttack())
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
@@ -196,9 +196,16 @@ void AZinx::FinishEquipping()
 void AZinx::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+}
 
+bool AZinx::CanAttack()
+{
+	return  ActionState == EActionState::EAS_Unoccupied &&
+		CharacterState != ECharacterState::ECS_Unequipped;
 
 }
+
+
 
 
 void AZinx::Tick(float DeltaTime)
@@ -223,14 +230,4 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AZinx::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
-	{
-		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->IgnoreActors.Empty();
-	
-	}
-
-}
 
