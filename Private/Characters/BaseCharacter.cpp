@@ -6,6 +6,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/AttributeComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -69,6 +71,39 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
 	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Green, 5.f);
 }
 
+void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
+{
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+}
+
+void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
+{
+	if (HitParticles && GetWorld())
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles,
+			ImpactPoint
+		);
+
+	}
+}
+
+void ABaseCharacter::HandleDamage(float DamageAmount)
+{
+	if (Attributes)
+	{
+		Attributes->ReceiveDamage(DamageAmount);
+	}
+}
+
 void ABaseCharacter::Attack(const FInputActionValue& Value)
 {
 }
@@ -80,6 +115,11 @@ bool ABaseCharacter::CanAttack()
 
 void ABaseCharacter::Die()
 {
+}
+
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
 }
 
 void ABaseCharacter::AttackEnd()

@@ -23,7 +23,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCaused) override;
 	virtual void Destroyed() override;
@@ -32,6 +31,8 @@ protected:
 	virtual void Die() override;
 	virtual void Attack(const FInputActionValue& Value) override;
 	virtual void PlayAttackMontage() override;
+	virtual bool CanAttack() override;
+	virtual void HandleDamage(float DamageAmount) override;
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
@@ -40,10 +41,43 @@ protected:
 	
 
 	UPROPERTY(BlueprintReadOnly)
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+	EDeathPose DeathPose;
+
+
+	UPROPERTY(BlueprintReadOnly)
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 private:
+	//AI BEHAVIOR//
+	void HideHealthBar();
+	void ShowHealthBar();
+	void LoseInterest();
+	void StartPatrolling();
+	void ChaseTarget();
+	bool IsOutsideCombatRadius();
+	bool IsOutsideAttackRadius();
+	//bool IsInsideAttackRadius();
+	bool IsChasing();
+	bool IsAttacking();
+	bool IsDead();
+	bool IsEngaged();
+	void ClearPatrolTimer();
 
+	//COMBAT
+	void StartAttackTimer();
+	void ClearAttackTimer();
+	void StartAttackTimerFinished();
+	FTimerHandle AttackTimer;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float AttackMin = 0.5f;
+	UPROPERTY(EditAnywhere, Category = Combat)
+
+	float AttackMax = 1.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float PatrollingSpeed = 125.f;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ChasingSpeed = 300.f;
 	//COMPONENTS
 
 
@@ -90,5 +124,4 @@ private:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
 
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 };
