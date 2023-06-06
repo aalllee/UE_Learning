@@ -46,7 +46,7 @@ void AEnemy::BeginPlay()
 	}
 
 	InitializeEnemy();
-
+	Tags.Add(FName("Enemy"));
 	//NavPath Debug
 	/*
 	EnemyController->MoveTo(MoveRequest, &NavPath);
@@ -330,6 +330,8 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("EnemyGetHit"));
+
 	ShowHealthBar();
 
 	if (IsAlive())
