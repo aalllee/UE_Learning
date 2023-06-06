@@ -30,15 +30,21 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Die() override;
 	virtual void Attack(const FInputActionValue& Value) override;
-	virtual void PlayAttackMontage() override;
+	virtual int32 PlayDeathMontage() override;
+
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float DeathLifeSpan = 3.f;
+	
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
 	
+
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose;
