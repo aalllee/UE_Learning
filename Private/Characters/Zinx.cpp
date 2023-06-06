@@ -86,11 +86,7 @@ void AZinx::EKey(const FInputActionValue& Value)
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"),this,this);
-		
-		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-		OverlappingItem = nullptr;
-		EquippedWeapon = OverlappingWeapon;
+		EquipWeapon(OverlappingWeapon);
 	}
 	else
 	{
@@ -130,14 +126,10 @@ void AZinx::Attack(const FInputActionValue& Value)
 		ActionState = EActionState::EAS_Attacking;
 	}
 }
-
 void AZinx::Dodge(const FInputActionValue& Value)
 {
 	
 }
-
-
-
 void AZinx::PlayEquipMontage(FName SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -169,6 +161,14 @@ void AZinx::FinishEquipping()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void AZinx::EquipWeapon(AWeapon* Weapon)
+{
+	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+
+	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	OverlappingItem = nullptr;
+	EquippedWeapon = Weapon;
+}
 
 void AZinx::AttackEnd()
 {
@@ -179,11 +179,7 @@ bool AZinx::CanAttack()
 {
 	return  ActionState == EActionState::EAS_Unoccupied &&
 		CharacterState != ECharacterState::ECS_Unequipped;
-
 }
-
-
-
 
 void AZinx::Tick(float DeltaTime)
 {

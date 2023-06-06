@@ -34,7 +34,6 @@ protected:
 	/*
 	Callbacks For Input
 	*/
-
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
@@ -42,23 +41,15 @@ protected:
 	virtual void Attack(const FInputActionValue& Value) override;
 	void Dodge(const FInputActionValue& Value);
 
-	/*
-	Play Montage Functions
-	*/
-
-	
+	//Combat
+	void EquipWeapon(AWeapon* Weapon);
 	virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 	void PlayEquipMontage(FName SectionName);
-
 	UFUNCTION(BlueprintCallable)
 	void Disarm();
-
-
 	UFUNCTION(BlueprintCallable)
 	void Arm();
-
-
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
 
@@ -83,9 +74,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* DodgeAction;
 
-
-
-
 private:
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
@@ -101,10 +89,6 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
-
-
-
-	
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage;

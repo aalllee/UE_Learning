@@ -47,24 +47,6 @@ protected:
 	AWeapon* EquippedWeapon;
 
 
-	/*
-	Animation Montages
-	*/
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* HitReactMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-		UAnimMontage* DeathMontage;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	TArray<FName> AttackMontageSections;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	TArray<FName> DeathMontageSections;
-
 	//components
 	UPROPERTY(VisibleAnywhere)
 		UAttributeComponent* Attributes;
@@ -75,4 +57,23 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 		UParticleSystem* HitParticles;
+
+private:
+	/*
+Animation Montages
+*/
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+		UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+		UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+		UAnimMontage* DeathMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+		TArray<FName> AttackMontageSections;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+		TArray<FName> DeathMontageSections;
 };
