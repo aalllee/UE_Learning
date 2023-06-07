@@ -29,6 +29,7 @@ protected:
 	virtual void Attack(const FInputActionValue& Value);
 	virtual bool CanAttack();
 	virtual void Die();
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 	bool IsAlive();
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();

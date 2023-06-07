@@ -167,6 +167,11 @@ void AZinx::FinishEquipping()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void AZinx::HitReactEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
 void AZinx::EquipWeapon(AWeapon* Weapon)
 {
 	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
@@ -211,8 +216,9 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AZinx::GetHit_Implementation(const FVector& ImpactPoint)
 {
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
+	Super::GetHit_Implementation(ImpactPoint);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	ActionState = EActionState::EAS_HitReaction;
 }
 
 

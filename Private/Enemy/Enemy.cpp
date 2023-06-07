@@ -80,6 +80,7 @@ void AEnemy::Die()
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AEnemy::Attack(const FInputActionValue& Value)
@@ -297,7 +298,7 @@ void AEnemy::InitializeEnemy()
 
 void AEnemy::CheckPatrolTarget()
 {
-	if (InTargetRange(PatrolTarget, PatrolRadius))
+	if (InTargetRange(PatrolTarget, PatrolRadius) && EnemyState == EEnemyState::EES_Patrolling)
 	{
 		PatrolTarget = ChoosePatrolTarget();
 		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
@@ -330,23 +331,12 @@ void AEnemy::CheckCombatTarget()
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
+	Super::GetHit_Implementation(ImpactPoint);
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("EnemyGetHit"));
 
-	ShowHealthBar();
-
-	if (IsAlive())
-	{
-		DirectionalHitReact(ImpactPoint);
-	}
-	else
-	{
-		Die();
-	}
+	if(!IsDead()) ShowHealthBar();
+	ClearPatrolTimer();
 	
-
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
-
 	
 
 }
