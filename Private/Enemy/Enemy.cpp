@@ -73,8 +73,8 @@ void AEnemy::SpawnDefaultWeapon()
 
 void AEnemy::Die()
 {
+	Super::Die();
 	EnemyState = EEnemyState::EES_Dead;
-	PlayDeathMontage();
 	ClearAttackTimer();
 	HideHealthBar();
 	DisableCapsule();
@@ -85,21 +85,13 @@ void AEnemy::Die()
 
 void AEnemy::Attack(const FInputActionValue& Value)
 {
+	Super::Attack(Value);
+	if (CombatTarget == nullptr) return;
 	EnemyState = EEnemyState::EES_Engaged;
 	PlayAttackMontage();
 }
 
-int32 AEnemy::PlayDeathMontage()
-{
-	const int32 Selection = Super::PlayDeathMontage();
-	TEnumAsByte<EDeathPose> Pose(Selection);
-	if (Pose < EDeathPose::EDP_MAX)
-	{
-		DeathPose = Pose;
-	
-	}
-	return Selection;
-}
+
 
 void AEnemy::AttackEnd()
 {

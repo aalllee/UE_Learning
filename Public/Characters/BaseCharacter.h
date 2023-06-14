@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Interfaces/HitInterface.h"
+#include "CharacterTypes.h"
 #include "BaseCharacter.generated.h"
 
 class AWeapon;
@@ -73,6 +74,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	double WarpTargetDistance = 75.f;
 
+	UPROPERTY(BlueprintReadOnly)
+		EDeathPose DeathPose;
+
 private:
 	/*
 Animation Montages
@@ -91,4 +95,8 @@ Animation Montages
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 		TArray<FName> DeathMontageSections;
+
+public:
+	FORCEINLINE EDeathPose GetDeathPose() const { return DeathPose; }
+
 };

@@ -5,10 +5,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AttributeComponent.h"
 #include "items/Item.h"
 #include "Animation/AnimInstance.h"
 #include "items/Weapons/Weapon.h"
 #include "Components/StaticMeshComponent.h"
+#include "HUD/SlashHUD.h"
+#include "HUD/SlashOverlay.h"
 //Enhanced input includes //////////////
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
@@ -51,6 +54,32 @@ void AZinx::BeginPlay()
 	}
 
 	Tags.Add(FName("PlayerCharacter"));
+
+
+	//Set HUD values
+	InitializeSlashOverlay();
+
+}
+
+void AZinx::InitializeSlashOverlay()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
+		if (SlashHUD)
+		{
+			SlashOverlay = SlashHUD->GetSlashOverlay();
+			if (SlashOverlay && Attributes)
+			{
+				SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+				SlashOverlay->SetStaminaBarPercent(1.f);
+				SlashOverlay->SetGold(0);
+				SlashOverlay->SetSouls(0);
+			}
+		}
+
+	}
 }
 
 
@@ -82,7 +111,7 @@ void AZinx::Look(const FInputActionValue& Value)
 	
 }
 
-void AZinx::Jump(const FInputActionValue& Value)
+void AZinx::JumpAct(const FInputActionValue& Value)
 {
 	//GetCharacterMovement()->DoJump(true);
 }
@@ -146,6 +175,13 @@ void AZinx::PlayEquipMontage(FName SectionName)
 	}
 }
 
+void AZinx::Die()
+{
+	Super::Die();
+	ActionState = EActionState::EAS_Dead;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 void AZinx::Disarm()
 {
 	if (EquippedWeapon)
@@ -206,7 +242,7 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AZinx::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AZinx::Look);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this,&ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this,&AZinx::Jump);
 		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &AZinx::EKey);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AZinx::Attack);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AZinx::Dodge);
@@ -214,11 +250,40 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+float AZinx::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCaused)
+{
+	HandleDamage(DamageAmount);
+
+	SetHUDHealth();
+
+	return DamageAmount;
+}
+
+void AZinx::Jump()
+{
+	if (ActionState == EActionState::EAS_Unoccupied)
+	{
+		Super::Jump();
+	}
+}
+
+void AZinx::SetHUDHealth()
+{
+	if (SlashOverlay && Attributes)
+	{
+		SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+
+	}
+}
+
 void AZinx::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	Super::GetHit_Implementation(ImpactPoint);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
-	ActionState = EActionState::EAS_HitReaction;
+	if (Attributes && Attributes->GetHealthPercent() > 0.f)
+	{
+		ActionState = EActionState::EAS_HitReaction;
+	}
 }
 
 

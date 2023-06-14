@@ -8,7 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Characters/CharacterTypes.h"
 ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -29,6 +29,14 @@ int32 ABaseCharacter::PlayAttackMontage()
 
 int32 ABaseCharacter::PlayDeathMontage()
 {
+	const int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+
+	TEnumAsByte<EDeathPose> Pose(Selection);
+	if (Pose < EDeathPose::EDP_MAX)
+	{
+		DeathPose = Pose;
+
+	}
 	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
 }
 
@@ -174,6 +182,10 @@ int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArr
 
 void ABaseCharacter::Attack(const FInputActionValue& Value)
 {
+	if (CombatTarget && CombatTarget->ActorHasTag(FName("Dead")))
+	{
+		CombatTarget = nullptr;
+	}
 }
 
 bool ABaseCharacter::CanAttack()
@@ -183,6 +195,8 @@ bool ABaseCharacter::CanAttack()
 
 void ABaseCharacter::Die()
 {
+	Tags.Add(FName("Dead"));
+	PlayDeathMontage();
 }
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint)

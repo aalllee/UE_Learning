@@ -17,7 +17,7 @@ class UCameraComponent;
 class AItem;
 class UAnimMontage;
 
-
+class USlashOverlay;
 
 UCLASS()
 class SLASH_API AZinx : public ABaseCharacter
@@ -28,16 +28,21 @@ public:
 	AZinx();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCaused) override;
+
+	virtual void Jump() override;
+
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 
 protected:
 	virtual void BeginPlay() override;
+	
 	/*
 	Callbacks For Input
 	*/
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void Jump(const FInputActionValue& Value);
+	void JumpAct(const FInputActionValue& Value);
 	void EKey(const FInputActionValue& Value);
 	virtual void Attack(const FInputActionValue& Value) override;
 	void Dodge(const FInputActionValue& Value);
@@ -47,6 +52,7 @@ protected:
 	virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 	void PlayEquipMontage(FName SectionName);
+	virtual void Die() override;
 	UFUNCTION(BlueprintCallable)
 	void Disarm();
 	UFUNCTION(BlueprintCallable)
@@ -80,6 +86,9 @@ protected:
 
 private:
 
+	void InitializeSlashOverlay();
+	void SetHUDHealth();
+
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 	
 	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess="true"))
@@ -97,7 +106,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage;
 
+	UPROPERTY()
+	USlashOverlay* SlashOverlay;
+
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const {return CharacterState;}
+	FORCEINLINE EActionState GetActionState() const {return ActionState;}
 };
