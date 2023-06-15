@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/AttributeComponent.h"
 #include "items/Item.h"
+#include "items/Soul.h"
+#include "items/Treasure.h"
 #include "Animation/AnimInstance.h"
 #include "items/Weapons/Weapon.h"
 #include "Components/StaticMeshComponent.h"
@@ -283,6 +285,34 @@ void AZinx::GetHit_Implementation(const FVector& ImpactPoint)
 	if (Attributes && Attributes->GetHealthPercent() > 0.f)
 	{
 		ActionState = EActionState::EAS_HitReaction;
+	}
+}
+
+void AZinx::SetOverlappingItem(AItem* Item)
+{
+	OverlappingItem = Item;
+}
+
+void AZinx::AddSouls(ASoul* Soul)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString("AddSouls"));
+	
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->AddSouls(Soul->GetSouls());
+		SlashOverlay->SetSouls(Attributes->GetSouls());
+	
+	}
+
+}
+
+void AZinx::AddGold(ATreasure* Treasure)
+{
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->AddGold(Treasure->GetGold());
+		SlashOverlay->SetGold(Attributes->GetGold());
+
 	}
 }
 

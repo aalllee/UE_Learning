@@ -29,6 +29,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Die() override;
+	void SpawnSoul();
 	virtual void Attack(const FInputActionValue& Value) override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
@@ -75,9 +76,10 @@ private:
 		UPawnSensingComponent* PawnSensing;
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class AWeapon> WeaponClass;
+	TSubclassOf<class AWeapon> WeaponClass;
 
-
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TSubclassOf<class ASoul> SoulClass;
 
 	UPROPERTY(EditAnywhere)
 		double CombatRadius = 500.f;

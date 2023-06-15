@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
+#include "Interfaces/PickupInterface.h"
 #include "Zinx.generated.h"
 
 class UInputMappingContext;
@@ -20,7 +21,7 @@ class UAnimMontage;
 class USlashOverlay;
 
 UCLASS()
-class SLASH_API AZinx : public ABaseCharacter
+class SLASH_API AZinx : public ABaseCharacter, public IPickupInterface
 {
 	GENERATED_BODY()
 
@@ -33,7 +34,9 @@ public:
 	virtual void Jump() override;
 
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
-
+	virtual void SetOverlappingItem(class AItem* Item) override;
+	virtual void AddSouls(ASoul* Soul) override;
+	virtual void AddGold(ATreasure* Treasure) override;
 protected:
 	virtual void BeginPlay() override;
 	
@@ -110,7 +113,6 @@ private:
 	USlashOverlay* SlashOverlay;
 
 public:
-	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const {return CharacterState;}
 	FORCEINLINE EActionState GetActionState() const {return ActionState;}
 };

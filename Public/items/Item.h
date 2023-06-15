@@ -8,7 +8,8 @@
 #include "Item.generated.h"
 
 class USphereComponent;
-
+class UNiagaraSystem;
+class USoundBase;
 enum class EItemState : uint8 
 {
 	EIS_Hovering,
@@ -51,7 +52,8 @@ protected:
 		int32 OtherBodyIndex);
 
 	float TransformedSin();
-
+	virtual void SpawnPickupSystem();
+	virtual void SpawnPickupSound();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh;
 
@@ -62,6 +64,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* ItemEffect;
+
+	UPROPERTY(EditAnywhere)
+
+	USoundBase* PickupSound;
 	
 
 private:
@@ -69,6 +75,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime = 0.f;
 
+	UPROPERTY(EditAnywhere)
+
+	UNiagaraSystem* PickupEffect;
 
 };
 
