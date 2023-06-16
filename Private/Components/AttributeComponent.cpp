@@ -3,7 +3,7 @@
 
 UAttributeComponent::UAttributeComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 }
 
@@ -30,6 +30,13 @@ bool UAttributeComponent::IsAlive()
 	return Health > 0.f;
 }
 
+
+
+float UAttributeComponent::GetStaminaPercent()
+{
+	return Stamina/MaxStamina;
+}
+
 void UAttributeComponent::AddSouls(int32 NumberOfSouls)
 {
 	Souls += NumberOfSouls;
@@ -45,5 +52,17 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
+}
+
+void UAttributeComponent::RegenStamina(float DeltaTime)
+{
+	Stamina = FMath::Clamp(Stamina + StaminaRegenRate * DeltaTime, 0.f, MaxStamina);
+
+}
+
+void UAttributeComponent::UseStamina(float DeltaTime)
+{
+	Stamina = FMath::Clamp(Stamina - SprintStaminaCost * DeltaTime, 0.f, MaxStamina);
 }
 

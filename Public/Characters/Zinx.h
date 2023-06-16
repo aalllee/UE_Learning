@@ -28,6 +28,7 @@ class SLASH_API AZinx : public ABaseCharacter, public IPickupInterface
 public:
 	AZinx();
 	virtual void Tick(float DeltaTime) override;
+	void UpdateSprintStamina(float DeltaTime);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCaused) override;
 
@@ -49,6 +50,8 @@ protected:
 	void EKey(const FInputActionValue& Value);
 	virtual void Attack(const FInputActionValue& Value) override;
 	void Dodge(const FInputActionValue& Value);
+	void SprintStart(const FInputActionValue& Value);
+	void SprintEnd(const FInputActionValue& Value);
 
 	//Combat
 	void EquipWeapon(AWeapon* Weapon);
@@ -86,6 +89,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* DodgeAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, Category = Movement)
+	float SprintSpeed = 700.f;
+
+	bool isSprinting = false;
+
+	UPROPERTY(EditAnywhere, Category = Movement)
+	float WalkSpeed = 400.f;
 
 private:
 

@@ -167,6 +167,29 @@ void AZinx::Dodge(const FInputActionValue& Value)
 {
 	
 }
+void AZinx::SprintStart(const FInputActionValue& Value)
+{
+	if (Attributes && Attributes->GetStamina() > Attributes->GetSprintCost())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString("START Sprint"));
+		//Attributes->UseStamina(true);
+		isSprinting = true;
+	}
+}
+void AZinx::SprintEnd(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString("END"));
+	
+	if (Attributes)
+	{
+		//Attributes->UseStamina(false);
+		isSprinting = false;
+
+	}
+	
+}
 void AZinx::PlayEquipMontage(FName SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -233,7 +256,33 @@ bool AZinx::CanAttack()
 void AZinx::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateSprintStamina(DeltaTime);
 }
+
+void AZinx::UpdateSprintStamina(float DeltaTime)
+{
+	if (Attributes && Attributes->GetStamina() < Attributes->GetSprintCost())
+	{
+		isSprinting = false;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	}
+
+	if (Attributes && isSprinting)
+	{
+		Attributes->UseStamina(DeltaTime);
+	}
+	else if (Attributes && !isSprinting)
+	{
+		Attributes->RegenStamina(DeltaTime);
+	}
+
+	if (SlashOverlay)
+	{
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
+}
+
 
 void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -248,6 +297,8 @@ void AZinx::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(EKeyAction, ETriggerEvent::Started, this, &AZinx::EKey);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AZinx::Attack);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AZinx::Dodge);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AZinx::SprintStart);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AZinx::SprintEnd);
 	}
 
 }
