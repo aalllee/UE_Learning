@@ -136,8 +136,8 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	if (Target == nullptr) return false;
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 15.f, 12, FColor::Green, false, 0.1f);
-	DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 15.f, 12, FColor::Green, false, 0.1f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 15.f, 12, FColor::Green, false, 0.1f);
+	//DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 15.f, 12, FColor::Green, false, 0.1f);
 	return DistanceToTarget <= Radius;
 }
 
@@ -178,7 +178,6 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 
 	if (bShouldChaseTarget)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("Chasing"));
 		CombatTarget = SeenPawn;
 		ClearPatrolTimer();
 		ChaseTarget();
@@ -343,7 +342,7 @@ void AEnemy::CheckCombatTarget()
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	Super::GetHit_Implementation(ImpactPoint);
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("EnemyGetHit"));
+	
 
 	if(!IsDead()) ShowHealthBar();
 	ClearPatrolTimer();

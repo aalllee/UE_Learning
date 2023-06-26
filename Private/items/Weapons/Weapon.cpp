@@ -87,8 +87,8 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlapperComponent, AActor* Oth
 	if (ActorIsSameType(OtherActor)) return;
 	if (GetOwner()->ActorHasTag(TEXT("PlayerCharacter")) && OtherActor->ActorHasTag(TEXT("PlayerCharacter"))) return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("other actor ") + OtherActor->GetName());
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("owner actor ") + GetOwner()->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("other actor ") + OtherActor->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("owner actor ") + GetOwner()->GetName());
 
 
 	FHitResult BoxHit;
@@ -99,7 +99,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlapperComponent, AActor* Oth
 		if (ActorIsSameType(BoxHit.GetActor())) return;
 		if (GetOwner()->ActorHasTag(TEXT("PlayerCharacter")) && BoxHit.GetActor()->ActorHasTag(TEXT("PlayerCharacter"))) return;
 	//	if (GetOwner()->ActorHasTag(TEXT("PlayerCharacter")) && BoxHit.GetActor()->ActorHasTag(TEXT("PlayerCharacter"))) return;
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("boxhit actor ") + BoxHit.GetActor()->GetName());
+		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, FString("boxhit actor ") + BoxHit.GetActor()->GetName());
 
 		UGameplayStatics::ApplyDamage(BoxHit.GetActor(),Damage,GetInstigator()->GetController(),this,UDamageType::StaticClass());
 

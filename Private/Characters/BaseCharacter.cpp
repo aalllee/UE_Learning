@@ -37,7 +37,8 @@ int32 ABaseCharacter::PlayDeathMontage()
 		DeathPose = Pose;
 
 	}
-	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	//return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	return Selection;
 }
 
 void ABaseCharacter::StopAttackMontage()
