@@ -6,5 +6,6 @@
 * Directional Hit Reacts
 * Pick-up Items
 * Animation montages
+* IK 
 
 Watch Demo Video: https://www.youtube.com/watch?v=6p2gEqlekjc
